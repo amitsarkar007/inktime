@@ -12,8 +12,11 @@ import 'features/timezones/timezone_repository.dart';
 import 'features/timezones/timezone_service.dart';
 import 'features/weather/location_service.dart';
 import 'features/weather/forecast_screen.dart';
+import 'features/weather/select_weather_location_screen.dart';
 import 'features/weather/sun_card.dart';
 import 'features/weather/weather_card.dart';
+import 'features/weather/weather_location_model.dart';
+import 'features/weather/weather_location_repository.dart';
 import 'features/weather/weather_model.dart';
 import 'features/weather/weather_service.dart';
 import 'shared/app_footer.dart';
@@ -65,6 +68,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final ClockController _clockController = ClockController();
   final LocationService _locationService = LocationService();
   final WeatherService _weatherService = WeatherService();
+  final WeatherLocationRepository _weatherLocationRepository =
+      WeatherLocationRepository();
   final TimezoneService _timezoneService = TimezoneService();
   final TimezoneRepository _timezoneRepository = TimezoneRepository();
 
@@ -73,6 +78,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   WeatherModel? _weather;
   String? _weatherError;
   String? _weatherLocationLabel;
+  WeatherLocationModel? _selectedWeatherLocation;
   String _localTimezone = DateTime.now().timeZoneName;
   List<TimezoneModel> _savedTimezones = const <TimezoneModel>[];
 
@@ -81,8 +87,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     _clockController.start();
     unawaited(_loadLocalTimezone());
+    unawaited(_loadSelectedWeatherLocation());
     unawaited(_loadSavedTimezones());
-    unawaited(_refreshWeather());
   }
 
   @override
@@ -111,6 +117,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  Future<void> _loadSelectedWeatherLocation() async {
+    final WeatherLocationModel? location = await _weatherLocationRepository.load();
+    if (mounted) {
+      setState(() => _selectedWeatherLocation = location);
+      await _refreshWeather();
+    }
+  }
+
   Future<void> _refreshWeather() async {
     if (_weatherLoading) {
       return;
@@ -120,6 +134,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _weatherLoading = true;
       _weatherError = null;
     });
+
+    final WeatherLocationModel? selectedLocation = _selectedWeatherLocation;
+    if (selectedLocation != null) {
+      final Result<WeatherModel> weatherResult = await _weatherService.fetchWeather(
+        latitude: selectedLocation.latitude,
+        longitude: selectedLocation.longitude,
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _weatherLoading = false;
+        switch (weatherResult) {
+          case Success<WeatherModel>(:final value):
+            _weather = value;
+            _weatherLocationLabel = selectedLocation.label;
+            _weatherError = null;
+          case Failure<WeatherModel>(:final message):
+            _weatherError = message;
+        }
+      });
+      return;
+    }
 
     final Result<Position> locationResult = await _locationService.getOneShotPosition();
     if (!mounted) {
@@ -184,6 +221,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  Future<void> _selectWeatherLocation() async {
+    final Object? selected = await Navigator.of(context).push<Object>(
+      MaterialPageRoute<Object>(
+        builder: (_) => SelectWeatherLocationScreen(
+          service: _timezoneService,
+          currentLocationLabel: _weatherLocationLabel ?? _localTimezone,
+        ),
+      ),
+    );
+    if (selected == null) {
+      return;
+    }
+
+    if (selected is UseGpsWeatherLocation) {
+      await _weatherLocationRepository.clear();
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _selectedWeatherLocation = null;
+        _weatherLocationLabel = null;
+      });
+      await _refreshWeather();
+      return;
+    }
+
+    if (selected is WeatherLocationModel) {
+      await _weatherLocationRepository.save(selected);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _selectedWeatherLocation = selected;
+        _weatherLocationLabel = selected.label;
+      });
+      await _refreshWeather();
+    }
+  }
+
   Future<void> _removeTimezone(TimezoneModel model) async {
     final List<TimezoneModel> updated = _savedTimezones.where((TimezoneModel existing) {
       return !(existing.city == model.city &&
@@ -234,6 +310,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             now: now,
                             localTimezone: _localTimezone,
                             locationLabel: _weatherLocationLabel,
+                            isGpsLocation: _selectedWeatherLocation == null,
+                            onChangeLocation: _selectWeatherLocation,
                           ),
                           const _SectionDivider(),
                           WeatherCard(
@@ -349,11 +427,15 @@ class _TimeSummary extends StatelessWidget {
     required this.now,
     required this.localTimezone,
     required this.locationLabel,
+    required this.isGpsLocation,
+    required this.onChangeLocation,
   });
 
   final DateTime now;
   final String localTimezone;
   final String? locationLabel;
+  final bool isGpsLocation;
+  final VoidCallback onChangeLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -384,12 +466,18 @@ class _TimeSummary extends StatelessWidget {
               const SizedBox(width: 5),
               Flexible(
                 child: Text(
-                  locationText,
+                  isGpsLocation ? '$locationText (GPS)' : locationText,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          TextButton.icon(
+            onPressed: onChangeLocation,
+            icon: const Icon(Icons.search, size: 18),
+            label: const Text('Change weather location'),
           ),
         ],
       ),

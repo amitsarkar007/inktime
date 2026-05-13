@@ -1,6 +1,6 @@
 # InkTime
 
-InkTime is a Flutter + Dart e-ink inspired dashboard app for Android, iOS and Windows desktop development. It combines a large 24-hour clock, GPS weather, forecasts, sun details, air quality, pollen, pressure and saved world clocks in a muted monochrome interface.
+InkTime is a Flutter + Dart e-ink inspired dashboard app for Android, iOS and Windows desktop development. It combines a large 24-hour clock, GPS or searched-location weather, forecasts, sun details, air quality, pollen, pressure and saved world clocks in a muted monochrome interface.
 
 ## Features
 
@@ -10,12 +10,15 @@ InkTime is a Flutter + Dart e-ink inspired dashboard app for Android, iOS and Wi
 - Large 24-hour digital clock.
 - Local date, local timezone and nearest location label.
 - One-shot GPS lookup only; no continuous location tracking.
+- Search for a weather location and persist it locally.
+- Switch back to GPS weather at any time.
 - Open-Meteo weather with no paid API and no API key.
 - Current temperature, feels-like temperature, high, low, humidity, wind, pressure, precipitation and precipitation probability.
 - UV index, air quality, PM2.5, PM10 and pollen where Open-Meteo supports the region/season.
 - Sunrise, sunset and daylight duration.
 - Forecast tab with rest-of-day hourly forecast and next 5 days.
 - Saved world clocks with Open-Meteo city search.
+- Weather location search with Open-Meteo city search.
 - World clocks sorted by current local time, with day offset labels.
 - All times use 24-hour format.
 - All units use metric/SI units: °C, mm, %, km/h, hPa and µg/m³.
@@ -65,9 +68,12 @@ docs/
 
 Icon source and generated launcher assets:
 
-- `assets/icon/app_icon.svg`
-- `assets/icon/app_icon.png`
-- `assets/icon/app_icon_foreground.png`
+- `assets/icon/app_icon.svg` — editable master SVG
+- `assets/icon/app_icon_foreground.svg` — editable Android adaptive foreground SVG
+- `assets/icon/app_icon.png` — 1024×1024 master PNG (cream paper background)
+- `assets/icon/app_icon_foreground.png` — 1024×1024 transparent foreground for Android adaptive icon
+- `assets/icon/play_store_icon.png` — 512×512 hi-res icon for the Google Play Console listing
+- `assets/icon/app_store_icon.png` — 1024×1024 marketing icon for App Store Connect
 - Android launcher PNGs under `android/app/src/main/res/mipmap-*`
 - iOS AppIcon set under `ios/Runner/Assets.xcassets/AppIcon.appiconset`
 
@@ -80,7 +86,15 @@ Store and SEO metadata:
 - `metadata/google_play/en-US/release_notes.txt`
 - `docs/seo_metadata.md`
 
-To regenerate launcher icons after changing `assets/icon/app_icon.png`:
+To regenerate every icon size from the master design (`tools/generate_icons.py`), which renders the master PNGs, Android mipmaps, iOS AppIcon set and the Play Store / App Store hero icons in one pass:
+
+```powershell
+py tools\generate_icons.py
+```
+
+Requires Python 3 with Pillow (`pip install pillow`).
+
+Alternatively, to regenerate only the platform launcher PNGs from `assets/icon/app_icon.png` using the Flutter tooling:
 
 ```powershell
 flutter pub get
