@@ -1,5 +1,5 @@
-name: e_ink_clock
-description: InkTime, a Kindle-style e-ink dashboard clock for mobile and desktop.
+name: InkTime
+description: Minimal e-ink inspired clock, weather, forecasts & world time dashboard.
 publish_to: "none"
 version: 1.0.0+1
 
@@ -20,8 +20,6 @@ dependencies:
   flutter_timezone: ^3.0.1
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   flutter_launcher_icons: ^0.14.3
   flutter_lints: ^5.0.0
 

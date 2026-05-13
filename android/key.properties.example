@@ -1,4 +1,7 @@
-storePassword=replace-with-keystore-password
-keyPassword=replace-with-key-password
-keyAlias=inktime
-storeFile=../release/inktime-upload-keystore.jks
+# Copy to android/key.properties and fill in your Play upload keystore.
+# Paths in storeFile are relative to the android/ directory.
+
+storePassword=your-keystore-password
+keyPassword=your-key-password
+keyAlias=upload
+storeFile=upload-keystore.jks

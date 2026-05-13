@@ -1,337 +1,90 @@
 # InkTime
 
-InkTime is a Flutter + Dart e-ink inspired dashboard app for Android, iOS and Windows desktop development. It combines a large 24-hour clock, GPS or searched-location weather, forecasts, sun details, air quality, pollen, pressure and saved world clocks in a muted monochrome interface.
+InkTime is a clean, distraction-free e-ink inspired dashboard that combines a large 24-hour clock, local weather, forecasts, air quality, sun details, and world clocks in one elegant monochrome interface. Designed for Android and iOS, InkTime focuses on clarity, simplicity, and useful information at a glance.
 
-## Features
+**Features**
 
-- One Flutter/Dart codebase.
-- Android, iOS and Windows desktop support.
-- E-ink friendly light and dark modes.
-- Large 24-hour digital clock.
-- Local date, local timezone and nearest location label.
-- One-shot GPS lookup only; no continuous location tracking.
-- Search for a weather location and persist it locally.
-- Switch back to GPS weather at any time.
-- Open-Meteo weather with no paid API and no API key.
-- Current temperature, feels-like temperature, high, low, humidity, wind, pressure, precipitation and precipitation probability.
-- UV index, air quality, PM2.5, PM10 and pollen where Open-Meteo supports the region/season.
-- Sunrise, sunset and daylight duration.
-- Forecast tab with rest-of-day hourly forecast and next 5 days.
-- Saved world clocks with Open-Meteo city search.
-- Weather location search with Open-Meteo city search.
-- World clocks sorted by current local time, with day offset labels.
-- All times use 24-hour format.
-- All units use metric/SI units: °C, mm, %, km/h, hPa and µg/m³.
-- Graceful handling for denied location permission, unavailable GPS, failed network/API calls and malformed responses.
+- Large 24-hour digital clock with local date and timezone
+- GPS weather lookup or manual city search
+- Current temperature, feels-like temperature, humidity, wind, pressure, precipitation, and UV index
+- Hourly forecast and 5-day weather forecast
+- Air quality, PM2.5, PM10, and pollen information where available
+- Sunrise, sunset, and daylight duration details
+- Saved world clocks with automatic timezone support
+- E-ink friendly light and dark themes
+- Pull-to-refresh dashboard and forecast screens
+- Clean monochrome design optimized for readability
+- Metric units throughout: °C, km/h, hPa, mm, and µg/m³
+- No paid weather API or API key required
 
-## Screenshots
+InkTime uses Open-Meteo services for weather, forecast, air quality, and geocoding data, delivering reliable information without unnecessary complexity. The app only uses location access to display local weather and does not continuously track your location.
 
-Screenshots placeholder:
+Whether you want a calm bedside clock, a focused desk dashboard, or a minimalist weather companion, InkTime delivers essential information in a beautiful e-ink inspired experience.
 
-- Dashboard light mode
-- Dashboard dark mode
-- Forecast tab
-- Add timezone search
-- Location permission denied state
+**Internal package name:** `e_ink_clock` (see `pubspec.yaml`). Stores and launches show **InkTime**.
 
-## APIs
+## Repository layout
 
-InkTime uses:
+| Path | Contents |
+| --- | --- |
+| `lib/` | Application logic and UI |
+| `android/` | Android packaging |
+| `ios/` | iOS packaging |
+| `assets/icon/` | Source artwork for icons and listing graphics |
+| `metadata/google_play/en-US/screenshots/` | Play Store phone / tablet screenshots |
+
+## App icon
+
+- `assets/icon/app_icon.svg` — editable master SVG
+- `assets/icon/app_icon_foreground.svg` — Android adaptive foreground SVG
+- `assets/icon/app_icon.png` — 1024×1024 master PNG (cream background)
+- `assets/icon/app_icon_foreground.png` — transparent foreground for adaptive icon
+- `assets/icon/play_store_icon.png` — 512×512 Play listing asset
+- `assets/icon/app_store_icon.png` — 1024×1024 App Store marketing icon
+- Android launcher bitmaps under `android/app/src/main/res/mipmap-*`
+- iOS AppIcon set under `ios/Runner/Assets.xcassets/AppIcon.appiconset`
+
+Regenerate Android and iOS launcher icons from the master PNG:
+
+```powershell
+dart run flutter_launcher_icons
+```
+
+## Data sources
 
 - Open-Meteo Forecast API: `https://api.open-meteo.com/v1/forecast`
 - Open-Meteo Air Quality API: `https://air-quality-api.open-meteo.com/v1/air-quality`
 - Open-Meteo Geocoding API: `https://geocoding-api.open-meteo.com/v1/search`
-- Device GPS through Flutter `geolocator`
-- Reverse geocoding through Flutter `geocoding`
+- Device location and reverse place labels use platform location services exposed to the app (no continuous background tracking).
 
-Open-Meteo is used because it is free for this use case, does not require API keys, supports metric units, and provides forecast, weather, air quality and geocoding data.
+## Required permissions
 
-## Project Structure
-
-```text
-lib/
-  main.dart
-  app.dart
-  shared/
-  features/
-    clock/
-    weather/
-    timezones/
-assets/
-  icon/
-metadata/
-  google_play/
-docs/
-```
-
-## App Icon and Metadata
-
-Icon source and generated launcher assets:
-
-- `assets/icon/app_icon.svg` — editable master SVG
-- `assets/icon/app_icon_foreground.svg` — editable Android adaptive foreground SVG
-- `assets/icon/app_icon.png` — 1024×1024 master PNG (cream paper background)
-- `assets/icon/app_icon_foreground.png` — 1024×1024 transparent foreground for Android adaptive icon
-- `assets/icon/play_store_icon.png` — 512×512 hi-res icon for the Google Play Console listing
-- `assets/icon/app_store_icon.png` — 1024×1024 marketing icon for App Store Connect
-- Android launcher PNGs under `android/app/src/main/res/mipmap-*`
-- iOS AppIcon set under `ios/Runner/Assets.xcassets/AppIcon.appiconset`
-
-Store and SEO metadata:
-
-- `metadata/google_play/en-US/title.txt`
-- `metadata/google_play/en-US/short_description.txt`
-- `metadata/google_play/en-US/full_description.txt`
-- `metadata/google_play/en-US/keywords.txt`
-- `metadata/google_play/en-US/release_notes.txt`
-- `docs/seo_metadata.md`
-
-To regenerate every icon size from the master design (`tools/generate_icons.py`), which renders the master PNGs, Android mipmaps, iOS AppIcon set and the Play Store / App Store hero icons in one pass:
-
-```powershell
-py tools\generate_icons.py
-```
-
-Requires Python 3 with Pillow (`pip install pillow`).
-
-Alternatively, to regenerate only the platform launcher PNGs from `assets/icon/app_icon.png` using the Flutter tooling:
-
-```powershell
-flutter pub get
-dart run flutter_launcher_icons
-```
-
-## Required Permissions
-
-Android:
+**Android**
 
 - `android.permission.ACCESS_FINE_LOCATION`
 - `android.permission.ACCESS_COARSE_LOCATION`
 - `android.permission.INTERNET`
 
-iOS:
+**iOS**
 
-- `NSLocationWhenInUseUsageDescription`
-- Value: `This app uses your location to show local weather.`
+- `NSLocationWhenInUseUsageDescription` — “This app uses your location to show local weather.”
 
-## Windows Setup
+## Google Play release checklist
 
-Install requirements:
+1. **Application ID.** This repo uses `app.inktime` for Android `namespace` / `applicationId` and as the iOS bundle id in `ios/Runner/Info.plist`. Confirm or replace before a public release.
+2. **Signing.** Configure a release keystore (see comments in `android/app/build.gradle.kts` and `android/key.properties.example`).
+3. **Version.** Bump `version` in `pubspec.yaml`; increment the build number for every Play upload.
+4. **Bundle output path (typical):** `build/app/outputs/bundle/release/app-release.aab`
+5. **Listing.** Upload icon from `assets/icon/app_icon.png`, add screenshots from `metadata/google_play/en-US/screenshots/`, and enter store copy in Play Console.
 
-1. Install Flutter SDK for Windows.
-2. Add Flutter to PATH.
-3. Install Android Studio.
-4. Install Android SDK and emulator.
-5. Install Visual Studio 2022 Build Tools.
-6. In Visual Studio Installer, enable:
-   - Desktop development with C++
-   - Windows 10/11 SDK
-   - MSVC build tools
+## iOS release
 
-Verify setup:
-
-```powershell
-flutter doctor
-```
-
-Install dependencies:
-
-```powershell
-flutter pub get
-```
-
-Run on Windows desktop:
-
-```powershell
-flutter run -d windows
-```
-
-## Android Development
-
-List devices:
-
-```powershell
-flutter devices
-```
-
-Run on Android emulator or device:
-
-```powershell
-flutter run -d <device_id>
-```
-
-Run tests:
-
-```powershell
-flutter test
-```
-
-Analyze:
-
-```powershell
-flutter analyze
-```
-
-## Google Play Store Build and Publishing
-
-1. Choose a final Android package name.
-
-   Update `android/app/build.gradle.kts`:
-
-   ```kotlin
-   namespace = "com.a2js.inktime"
-   applicationId = "com.a2js.inktime"
-   ```
-
-2. Generate an upload keystore.
-
-   ```powershell
-   New-Item -ItemType Directory -Force android\release
-   keytool -genkey -v -keystore android\release\inktime-upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias inktime
-   ```
-
-3. Create `android/key.properties` from `android/key.properties.example`.
-
-   ```properties
-   storePassword=<store password>
-   keyPassword=<key password>
-   keyAlias=inktime
-   storeFile=../release/inktime-upload-keystore.jks
-   ```
-
-4. Configure release signing in `android/app/build.gradle.kts`.
-
-   Add before `android { ... }`:
-
-   ```kotlin
-   import java.util.Properties
-   import java.io.FileInputStream
-
-   val keystoreProperties = Properties()
-   val keystorePropertiesFile = rootProject.file("key.properties")
-   if (keystorePropertiesFile.exists()) {
-       keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-   }
-   ```
-
-   Replace the release signing config with:
-
-   ```kotlin
-   signingConfigs {
-       create("release") {
-           keyAlias = keystoreProperties["keyAlias"] as String
-           keyPassword = keystoreProperties["keyPassword"] as String
-           storeFile = file(keystoreProperties["storeFile"] as String)
-           storePassword = keystoreProperties["storePassword"] as String
-       }
-   }
-
-   buildTypes {
-       release {
-           signingConfig = signingConfigs.getByName("release")
-           isMinifyEnabled = false
-           isShrinkResources = false
-       }
-   }
-   ```
-
-5. Update version in `pubspec.yaml`.
-
-   ```yaml
-   version: 1.0.0+1
-   ```
-
-   Increment the build number after every Play Store upload.
-
-6. Build the Android App Bundle.
-
-   ```powershell
-   flutter clean
-   flutter pub get
-   flutter test
-   flutter analyze
-   flutter build appbundle --release
-   ```
-
-   Output:
-
-   ```text
-   build/app/outputs/bundle/release/app-release.aab
-   ```
-
-7. Create the app in Google Play Console.
-
-   - App name: `InkTime`
-   - Default language: English
-   - App type: App
-   - Category: Weather
-   - Free or paid: choose before publishing
-
-8. Complete Play Console setup.
-
-   - Upload app icon from `assets/icon/app_icon.png`.
-   - Add screenshots.
-   - Use copy from `metadata/google_play/en-US`.
-   - Complete Data safety.
-   - Complete content rating.
-   - Add privacy policy URL.
-   - Upload the `.aab` to Internal testing first.
-   - Test install from Play Store internal testing.
-   - Promote to Closed testing, Open testing or Production when ready.
-
-## iOS Notes
-
-Run iOS builds from macOS with Xcode installed.
-
-```bash
-flutter pub get
-flutter build ipa --release
-```
-
-Configure signing, bundle identifier and App Store Connect metadata in Xcode/App Store Connect.
+Produce a signed release archive from macOS with Xcode installed, then complete App Store Connect metadata in the portal.
 
 ## Troubleshooting
 
-### Flutter doctor errors
+- **Location denied** — Enable location in system settings; permanent denial requires changing it outside the app.
+- **Network / APIs** — Check connectivity, firewalls, and Open-Meteo availability; errors are shown in-app.
+- **Pollen unavailable** — Open-Meteo pollen is region- and season-dependent; the UI shows “Unavailable” when no data is returned.
 
-Run:
-
-```powershell
-flutter doctor -v
-```
-
-Resolve missing Android SDK, Xcode, Visual Studio or PATH issues.
-
-### Missing Visual Studio Build Tools
-
-Install Visual Studio 2022 Build Tools and enable:
-
-- Desktop development with C++
-- Windows 10/11 SDK
-- MSVC build tools
-
-### Android emulator not appearing
-
-Start an emulator from Android Studio Device Manager, then run:
-
-```powershell
-flutter devices
-```
-
-Check virtualization support if no emulator appears.
-
-### Location permission denied
-
-Enable location permission in system settings and tap refresh. If permission is permanently denied, Android and iOS require changing it in system settings.
-
-### Network/API failure
-
-Check internet access, firewall rules and Open-Meteo availability. The app keeps the UI usable and shows a clear error.
-
-### Pollen unavailable
-
-Open-Meteo pollen data is region and season dependent. InkTime shows `Unavailable` when pollen data is not returned for the current location.
-
-### Windows desktop GPS limitation
-
-Windows desktop devices often do not have GPS hardware or a configured location provider. Android and iOS devices provide the best GPS behavior.
+Technical contributors are expected to use the standard Flutter Material toolchain for this project type: dependency sync, static checks, and store builds. Use the ecosystem’s diagnostics when environment or SDK paths are misconfigured.
