@@ -1,27 +1,27 @@
 # InkTime
 
-InkTime is a clean, distraction-free e-ink inspired dashboard that combines a large 24-hour clock, local weather, forecasts, air quality, sun details, and world clocks in one elegant monochrome interface. Designed for Android and iOS, InkTime focuses on clarity, simplicity, and useful information at a glance.
+InkTime is a clean, distraction-free e-ink inspired dashboard that combines a large 24-hour clock, local weather, forecasts, air quality, sun details, and world clocks in one elegant monochrome interface. Built with [Flutter](https://flutter.dev/) for Android and iOS, it focuses on clarity, simplicity, and useful information at a glance.
 
 **Features**
 
-- Large 24-hour digital clock with local date and timezone
-- GPS weather lookup or manual city search
+- **Now** and **Forecast** tabs — main dashboard plus a dedicated forecast view with pull-to-refresh on both
+- Large 24-hour digital clock with local date and device timezone (via `flutter_timezone` when available)
+- Weather location: **GPS** (one-shot, when permission is granted) or a **saved city** from search; preference persists locally
 - Current temperature, feels-like temperature, humidity, wind, pressure, precipitation, and UV index
 - Hourly forecast and 5-day weather forecast
 - Air quality, PM2.5, PM10, and pollen information where available
 - Sunrise, sunset, and daylight duration details
-- Saved world clocks with automatic timezone support
-- E-ink friendly light and dark themes
-- Pull-to-refresh dashboard and forecast screens
+- Saved world clocks with automatic timezone support (`timezone` package, IANA data initialized at startup)
+- E-ink friendly light and dark themes (toggle in the header)
 - Clean monochrome design optimized for readability
 - Metric units throughout: °C, km/h, hPa, mm, and µg/m³
 - No paid weather API or API key required
 
-InkTime uses Open-Meteo services for weather, forecast, air quality, and geocoding data, delivering reliable information without unnecessary complexity. The app only uses location access to display local weather and does not continuously track your location.
+InkTime uses Open-Meteo for weather, forecast, air quality, and geocoding. The app requests location only to resolve local weather when you use GPS mode; it does not continuously track your position.
 
 Whether you want a calm bedside clock, a focused desk dashboard, or a minimalist weather companion, InkTime delivers essential information in a beautiful e-ink inspired experience.
 
-**Internal package name:** `e_ink_clock` (see `pubspec.yaml`). Stores and launches show **InkTime**.
+**Dart package name:** `InkTime` (see `pubspec.yaml` `name`). The store and launcher label are **InkTime**.
 
 ## Repository layout
 
@@ -32,6 +32,17 @@ Whether you want a calm bedside clock, a focused desk dashboard, or a minimalist
 | `ios/` | iOS packaging |
 | `assets/icon/` | Source artwork for icons and listing graphics |
 | `metadata/google_play/en-US/screenshots/` | Play Store phone / tablet screenshots |
+
+## Development
+
+- Install the [Flutter SDK](https://docs.flutter.dev/get-started/install) (Dart `>=3.4.0 <4.0.0` per `pubspec.yaml`).
+- From the repo root:
+
+```powershell
+flutter pub get
+flutter analyze
+flutter run
+```
 
 ## App icon
 
@@ -55,7 +66,7 @@ dart run flutter_launcher_icons
 - Open-Meteo Forecast API: `https://api.open-meteo.com/v1/forecast`
 - Open-Meteo Air Quality API: `https://air-quality-api.open-meteo.com/v1/air-quality`
 - Open-Meteo Geocoding API: `https://geocoding-api.open-meteo.com/v1/search`
-- Device location and reverse place labels use platform location services exposed to the app (no continuous background tracking).
+- Device location and place labels use platform location / geocoding APIs exposed to the app (no continuous background tracking).
 
 ## Required permissions
 

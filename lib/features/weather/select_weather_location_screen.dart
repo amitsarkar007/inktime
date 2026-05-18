@@ -10,12 +10,18 @@ import 'weather_location_model.dart';
 class SelectWeatherLocationScreen extends StatefulWidget {
   const SelectWeatherLocationScreen({
     required this.service,
-    required this.currentLocationLabel,
+    required this.isFollowingDevice,
+    required this.locationSummaryLine,
     super.key,
   });
 
   final TimezoneService service;
-  final String currentLocationLabel;
+
+  /// When true, weather uses GPS/device position; when false, a saved place is pinned.
+  final bool isFollowingDevice;
+
+  /// City/country-style label or local timezone ID — context only; not part of search.
+  final String locationSummaryLine;
 
   @override
   State<SelectWeatherLocationScreen> createState() => _SelectWeatherLocationScreenState();
@@ -74,17 +80,41 @@ class _SelectWeatherLocationScreenState extends State<SelectWeatherLocationScree
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Text(
+                'Use device position',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              const SizedBox(height: 10),
               OutlinedButton.icon(
                 onPressed: () => Navigator.of(context).pop(const UseGpsWeatherLocation()),
                 icon: const Icon(Icons.my_location),
-                label: Text('Use GPS location (${widget.currentLocationLabel})'),
+                label: const Text('Use my location'),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
+              Text(
+                widget.isFollowingDevice
+                    ? 'Weather uses your position. Shown as: ${widget.locationSummaryLine}'
+                    : 'Pinned to ${widget.locationSummaryLine}. Tap Use my location to use device position instead.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.72),
+                      height: 1.35,
+                    ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Pick a place',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              const SizedBox(height: 10),
               TextField(
                 controller: _controller,
                 autofocus: true,
                 decoration: const InputDecoration(
-                  labelText: 'Search weather location',
+                  labelText: 'Search for a city or place',
                   prefixIcon: Icon(Icons.search),
                 ),
                 textInputAction: TextInputAction.search,

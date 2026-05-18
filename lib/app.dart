@@ -226,7 +226,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       MaterialPageRoute<Object>(
         builder: (_) => SelectWeatherLocationScreen(
           service: _timezoneService,
-          currentLocationLabel: _weatherLocationLabel ?? _localTimezone,
+          isFollowingDevice: _selectedWeatherLocation == null,
+          locationSummaryLine: _weatherLocationLabel ?? _localTimezone,
         ),
       ),
     );
